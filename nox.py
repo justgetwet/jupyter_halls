@@ -1,5 +1,6 @@
 import subprocess
 from time import sleep
+import pathlib
 import pyautogui as gui
 import win32gui
 import pyperclip
@@ -42,7 +43,8 @@ class DmmCrawl(Ocr):
   
     dmm_icon = "./images/dmm.png"
     mypage_icon = "./images/mypage.png"
-    dstation_icon = "./images/dstation.png"
+    dstation_icon = "./images/dstation_kuragano.png"
+    dskamisato_icon = "./images/dstation_kamisato.png"
   
     proc = subprocess.Popen(self.nox_p)
     sleep(60)
@@ -60,15 +62,22 @@ class DmmCrawl(Ocr):
       sleep(5)
     gui.click(mypage_pos)
     sleep(5)
-
-    ds_pos = None
-    while ds_pos is None:
-      ds_pos = gui.locateCenterOnScreen(dstation_icon, confidence=0.9)
-      sleep(5)
-    gui.click(ds_pos)
-    sleep(10)
     
     return proc
+
+  def clickHall(sefl, icon_path: str) -> None:
+  
+    p = pathlib.Path(icon_path)
+    if not p.exists():
+      print("icon path does not exists.")
+      return
+    ds_pos = None
+    while ds_pos is None:
+      ds_pos = gui.locateCenterOnScreen(icon_path, confidence=0.9)
+      sleep(5)
+    gui.click(ds_pos)
+    sleep(5)
+    
     
   def ocr_process(self, img):
   
@@ -145,16 +154,17 @@ class DmmCrawl(Ocr):
     
     return dic
 
-def is_num(self, str_num):
-  try:
-    float(str_num)
-  except ValueError:
-    return False
-  else:
-    return True
+# def is_num(self, str_num):
+  # try:
+    # float(str_num)
+  # except ValueError:
+    # return False
+  # else:
+    # return True
 
 if __name__=='__main__':
 
+  dsKuragano_icon = "./images/dstation_kuragano.png"
   p = "./ds.json"
   with open(p, "r", encoding="utf-8") as f:
     read_dic = json.load(f)
@@ -162,20 +172,22 @@ if __name__=='__main__':
   
   crawl = DmmCrawl()
   proc = crawl.openDmm()
-  works = {}
-  for key, item in read_dic.items():
-    dic = crawl.machine(int(key), item)
-    works.update(dic)
+  crawl.clickHall(dsKuragano_icon)
+  sleep(5)
+  # works = {}
+  # for key, item in read_dic.items():
+    # dic = crawl.machine(int(key), item)
+    # works.update(dic)
   proc.terminate()
   # print(works)
   
-  dt_now = datetime.datetime.now()
-  dt_day = dt_now.day
-  if dt_now.hour < 9: dt_day -= 1
-  yyyymmdd = dt_now.strftime('%Y-%m-') + str(dt_day).rjust(2, "0")
+  # dt_now = datetime.datetime.now()
+  # dt_day = dt_now.day
+  # if dt_now.hour < 9: dt_day -= 1
+  # yyyymmdd = dt_now.strftime('%Y-%m-') + str(dt_day).rjust(2, "0")
   
-  read_json = json.dumps(works, ensure_ascii=False)
-  p_w = f"./ds_works_{yyyymmdd}.json"
-  with open(p_w, "w", encoding="utf-8") as f:
-    f.write(read_json)
+  # read_json = json.dumps(works, ensure_ascii=False)
+  # p_w = f"./ds_works_{yyyymmdd}.json"
+  # with open(p_w, "w", encoding="utf-8") as f:
+    # f.write(read_json)
   

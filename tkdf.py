@@ -26,10 +26,9 @@ class TkDf(tk.Tk):
 if __name__=='__main__':
 
   dt_now = datetime.datetime.now()
-  dt_day = dt_now.day
-  if dt_now.hour < 9: dt_day -= 1
-  # dt_day -= 1
-  yyyymmdd = dt_now.strftime('%Y-%m-') + str(dt_day).rjust(2, "0")
+  oneday = datetime.timedelta(days=1)
+  if dt_now.hour < 12: dt_now -= oneday
+  yyyymmdd = dt_now.strftime('%Y-%m-%d')
   
   p_r = f"./ds_works_{yyyymmdd}.json"
   with open(p_r, "r", encoding="utf-8") as f:
