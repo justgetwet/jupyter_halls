@@ -12,7 +12,7 @@ import sys
 import io
 import pyocr
 import pyocr.builders
-
+from tts import Tts
 from tkdf import TkDf
 # sys.stdout = io.TextIOWrapper(
   # sys.stdout.buffer, encoding=sys.stdout.encoding, errors="replace"
@@ -38,6 +38,7 @@ class Ocr:
 class DmmCrawl(Ocr):
   
   nox_p = "C:\\Program Files (x86)\\Nox\\bin\\Nox.exe"
+  tts = Tts()
   
   def openDmm(self) -> subprocess.Popen:
   
@@ -103,39 +104,46 @@ class DmmCrawl(Ocr):
     data_icon = "./images/data_kokai.png"
     search_icon = "./images/search_no.png"
     star_icon = "./images/yellow_star.png"
+    daino_icon = "./images/dai_no.png"
     x_icon = "./images/x.png"
     img_p = "./im.png"
     
     data_pos = None
     while data_pos is None:
       data_pos = gui.locateCenterOnScreen(data_icon, confidence=0.9)
-      sleep(5)
+      sleep(3)
     gui.click(data_pos)
-    sleep(10)
+    sleep(5)
   
     search_pos = None
     while search_pos is None:
       search_pos = gui.locateCenterOnScreen(search_icon, confidence=0.9)
       sleep(3)
     gui.click(search_pos)
-    sleep(3)
+    sleep(5)
     # machine_no = no
     pyperclip.copy(no)
     gui.hotkey("ctrl", "v")
     sleep(1)
     gui.hotkey("return")
-    sleep(5)
+    sleep(3)
+    
+    daino_pos = None
+    while daino_pos is None:
+      sleep(3)
+      daino_pos = gui.locateCenterOnScreen(daino_icon, confidence=0.9)
 
     star_pos = None
     while star_pos is None:
-      star_pos = gui.locateCenterOnScreen(star_icon, confidence=0.9)
       sleep(3)
-
+      star_pos = gui.locateCenterOnScreen(star_icon, confidence=0.9)
+    
+    sleep(1)
     x, y = star_pos
     gui.moveTo(x + 100, y + 500)
-    sleep(5)
-    gui.dragRel(0, -450, duration=1, button='left')
-    sleep(5)
+    sleep(1)
+    gui.dragRel(0, -450, duration=3, button='left')
+    sleep(3)
     handle = win32gui.FindWindow(None, 'NoxPlayer')
     rect = win32gui.GetWindowRect(handle)
     img = ImageGrab.grab(rect)
@@ -143,7 +151,8 @@ class DmmCrawl(Ocr):
     dt_now = datetime.datetime.now()
     dt = dt_now.strftime('%m/%d %H:%M')
     dic = {no: [machine, dt] + list(tpl)}
-    sleep(3)
+    
+    self.tts.talk(f"No. {no} processing completed.")
 
     x_pos = None
     while x_pos is None:
@@ -153,6 +162,22 @@ class DmmCrawl(Ocr):
     sleep(3)
     
     return dic
+
+  def clickwait(self):
+    wait_icon = "./images/wait.png"
+    count = 0
+    wait_pos = None
+    while wait_pos is None:
+      wait_pos = gui.locateCenterOnScreen(wait_icon, confidence=0.9)
+      sleep(3)
+      count += 1
+      if count == 200: # 10 minute
+        print("clickwait processing is timeout.")
+        break
+    if wait_pos:
+      gui.click(wait_pos)
+    print("clickwait processing completed.")
+    
 
 # def is_num(self, str_num):
   # try:
@@ -164,21 +189,23 @@ class DmmCrawl(Ocr):
 
 if __name__=='__main__':
 
-  dsKuragano_icon = "./images/dstation_kuragano.png"
-  p = "./ds.json"
-  with open(p, "r", encoding="utf-8") as f:
-    read_dic = json.load(f)
+  pass
+
+  # dsKuragano_icon = "./images/dstation_kuragano.png"
+  # p = "./ds.json"
+  # with open(p, "r", encoding="utf-8") as f:
+    # read_dic = json.load(f)
   # print(read_dic)
   
-  crawl = DmmCrawl()
-  proc = crawl.openDmm()
-  crawl.clickHall(dsKuragano_icon)
-  sleep(5)
+  # crawl = DmmCrawl()
+  # proc = crawl.openDmm()
+  # crawl.clickHall(dsKuragano_icon)
+  # sleep(5)
   # works = {}
   # for key, item in read_dic.items():
     # dic = crawl.machine(int(key), item)
     # works.update(dic)
-  proc.terminate()
+  # proc.terminate()
   # print(works)
   
   # dt_now = datetime.datetime.now()

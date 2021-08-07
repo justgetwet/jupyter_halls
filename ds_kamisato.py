@@ -1,8 +1,10 @@
 from nox import DmmCrawl
 from tkdf import TkDf
 import datetime
+from time import sleep
 import json
 import pandas as pd
+import threading
 
 def datestring():
   dt_now = datetime.datetime.now()
@@ -12,14 +14,14 @@ def datestring():
   
   return yyyymmdd
 
-if __name__=='__main__':
-
+def main():
   # DS上里
   icon_p = "./images/ds_kamisato.png"
   json_p = "./ds_kamisato.json"
+  
   yyyymmdd = datestring()
   work_p = f"./ds_kamisato_works_{yyyymmdd}.json"
-  
+    
   with open(json_p, "r", encoding="utf-8") as f:
     read_dic = json.load(f)
   # print(read_dic)
@@ -44,11 +46,24 @@ if __name__=='__main__':
   
   df_0 = df[df["初当"] == "0"]
   
-  app_0 = TkDf(df_0)
-  app_0.geometry("+700+100")
-  app_0.mainloop()
+  if len(df_0):
+    app_0 = TkDf(df_0)
+    app_0.geometry("+700+100")
+    app_0.mainloop()
   
-  dic = {idx: list(row) for idx, row in df_0.iterrows()}
-  read_json = json.dumps(dic, ensure_ascii=False)
-  with open(work_p, "w", encoding="utf-8") as f:
-    f.write(read_json)
+    dic = {idx: list(row) for idx, row in df_0.iterrows()}
+    read_json = json.dumps(dic, ensure_ascii=False)
+    with open(work_p, "w", encoding="utf-8") as f:
+      f.write(read_json)
+
+def waitmonitor():
+  crawl = DmmCrawl()
+  crawl.clickwait()
+
+if __name__=='__main__':
+
+  mainprocess = threading.Thread(target=main)
+  subprocess = threading.Thread(target=waitmonitor)
+  
+  mainprocess.start()
+  subprocess.start()
