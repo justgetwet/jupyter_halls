@@ -1,6 +1,3 @@
-# import matplotlib.pyplot as plt
-# from PIL import Image
-# import tkinter as tk
 import pygame
 import os
 from mutagen.mp3 import MP3

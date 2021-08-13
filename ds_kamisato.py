@@ -1,5 +1,6 @@
 from nox import DmmCrawl
-from tkdf import TkDf
+# from tkdf import TkDf
+from tktable import TkTable
 import datetime
 from time import sleep
 import json
@@ -18,6 +19,7 @@ def main():
   # DS上里
   icon_p = "./images/ds_kamisato.png"
   json_p = "./ds_kamisato.json"
+  # json_p = "./ds_test.json"
   
   yyyymmdd = datestring()
   work_p = f"./ds_kamisato_works_{yyyymmdd}.json"
@@ -40,16 +42,18 @@ def main():
   col = ["No", "machine", "date", "初当", "継続", "最終", "前日"]
   df = pd.DataFrame(lst, columns=col)
   
-  app = TkDf(df)
-  app.geometry("+600+50")
-  app.mainloop()
+  app = TkTable(df)
+  app.run()
+  # app.geometry("+600+50")
+  # app.mainloop()
   
   df_0 = df[df["初当"] == "0"]
   
   if len(df_0):
-    app_0 = TkDf(df_0)
-    app_0.geometry("+700+100")
-    app_0.mainloop()
+    app_0 = TkTable(df_0)
+    app_0.run()
+    # app_0.geometry("+700+100")
+    # app_0.mainloop()
   
     dic = {idx: list(row) for idx, row in df_0.iterrows()}
     read_json = json.dumps(dic, ensure_ascii=False)

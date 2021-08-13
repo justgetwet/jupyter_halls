@@ -72,6 +72,7 @@ class DmmCrawl(Ocr):
     if not p.exists():
       print("icon path does not exists.")
       return
+    sleep(5)
     ds_pos = None
     while ds_pos is None:
       ds_pos = gui.locateCenterOnScreen(icon_path, confidence=0.9)
